@@ -1,8 +1,9 @@
-package org.schhx.toyspring.simple;
+package org.schhx.toyspring.simpleioc;
 
 import org.junit.Test;
 import org.schhx.toyspring.Car;
 import org.schhx.toyspring.Wheel;
+import org.schhx.toyspring.simpleioc.SimpleIOC;
 
 import static org.junit.Assert.*;
 

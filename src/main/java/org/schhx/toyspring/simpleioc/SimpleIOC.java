@@ -1,4 +1,4 @@
-package org.schhx.toyspring.simple;
+package org.schhx.toyspring.simpleioc;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 1. 解析 xml 获取 bean 定义
+ * 2. 获取 bean 时从缓存中获取或初始化后返回
+ *
  * @author shanchao
  * @date 2018-09-30
  */
