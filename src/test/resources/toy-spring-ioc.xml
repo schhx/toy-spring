@@ -1,0 +1,12 @@
+<beans xmlns="http://www.springframework.org/schema/beans">
+
+    <bean id="car" class="org.schhx.toyspring.Car">
+        <property name="wheel" ref="wheel"/>
+    </bean>
+
+    <bean id="wheel" class="org.schhx.toyspring.Wheel">
+        <property name="brand" value="Michelin" />
+    </bean>
+
+
+</beans>
