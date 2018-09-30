@@ -1,12 +1,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans">
 
     <bean id="car" class="org.schhx.toyspring.Car">
+        <property name="brand" value="Mercedes"/>
         <property name="wheel" ref="wheel"/>
     </bean>
 
     <bean id="wheel" class="org.schhx.toyspring.Wheel">
         <property name="brand" value="Michelin" />
     </bean>
+
+    <bean id="p1" class="org.schhx.toyspring.ioc.xml.MyBeanPostProcessor"></bean>
+    <bean id="p2" class="org.schhx.toyspring.ioc.xml.MyBeanPostProcessor2"></bean>
 
 
 </beans>
