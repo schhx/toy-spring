@@ -1,0 +1,15 @@
+<beans xmlns="http://www.springframework.org/schema/beans">
+
+    <bean id="helloService" class="org.schhx.toyspring.HelloServiceImpl"/>
+
+    <bean id="autoProxyCreator" class="org.schhx.toyspring.aop.aspectj.AspectJAwareAdvisorAutoProxyCreator"></bean>
+
+    <bean id="logMethodInterceptor" class="org.schhx.toyspring.aop.LogMethodInterceptor"/>
+
+    <bean id="advisor" class="org.schhx.toyspring.aop.aspectj.AspectJExpressionPointcutAdvisor">
+        <property name="advice" ref="logMethodInterceptor"/>
+        <property name="expression" value="execution(* org.schhx.toyspring.HelloService.*(..))"/>
+    </bean>
+
+
+</beans>

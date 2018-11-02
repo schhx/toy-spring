@@ -43,52 +43,60 @@ public class XmlBeanFactory implements BeanFactory {
         Object bean = definition.getBeanClass().newInstance();
         processProperties(bean, definition);
         processAware(bean);
-        beforeInit(bean, definition.getBeanName());
+        bean = applyBeanPostProcessorsBeforeInitialization(bean, definition.getBeanName());
         processInit(bean);
-        afterInit(bean, definition.getBeanName());
+        bean = applyBeanPostProcessorsAfterInitialization(bean, definition.getBeanName());
         definition.setBean(bean);
         return bean;
     }
 
     private void processProperties(Object bean, BeanDefinition definition) throws Exception {
         for (PropertyValue pv : definition.getPropertyValues().getPropertyValueList()) {
-            String fieldName = pv.getName();
-            Field field = bean.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
+            Object value = pv.getValue();
+            if (value instanceof BeanReference) {
+                BeanReference beanReference = (BeanReference) value;
+                value = getBean(beanReference.getBeanName());
+            }
 
-            if (pv.getValue() instanceof BeanReference) {
-                BeanReference ref = (BeanReference) pv.getValue();
-                field.set(bean, getBean(ref.getBeanName()));
-            } else {
-                field.set(bean, pv.getValue());
+            try {
+                Method declaredMethod = bean.getClass().getDeclaredMethod(
+                        "set" + pv.getName().substring(0, 1).toUpperCase()
+                                + pv.getName().substring(1), value.getClass());
+                declaredMethod.setAccessible(true);
+
+                declaredMethod.invoke(bean, value);
+            } catch (NoSuchMethodException e) {
+                Field declaredField = bean.getClass().getDeclaredField(pv.getName());
+                declaredField.setAccessible(true);
+                declaredField.set(bean, value);
             }
         }
     }
 
     private void processAware(Object bean) throws Exception {
         if (bean instanceof BeanFactoryAware) {
-            Method method = bean.getClass().getDeclaredMethod("setBeanFactory", BeanFactory.class);
-            method.invoke(bean, this);
+            ((BeanFactoryAware) bean).setBeanFactory(this);
         }
     }
 
     private void processInit(Object bean) throws Exception {
         if (bean instanceof InitializingBean) {
-            Method method = bean.getClass().getDeclaredMethod("afterPropertiesSet");
-            method.invoke(bean);
+            ((InitializingBean) bean).afterPropertiesSet();
         }
     }
 
-    private void beforeInit(Object bean, String beanName) throws Exception {
+    private Object applyBeanPostProcessorsBeforeInitialization(Object bean, String beanName) throws Exception {
         for (BeanPostProcessor processor : beanPostProcessors) {
-            processor.postProcessBeforeInitialization(bean, beanName);
+            bean = processor.postProcessBeforeInitialization(bean, beanName);
         }
+        return bean;
     }
 
-    private void afterInit(Object bean, String beanName) throws Exception {
+    private Object applyBeanPostProcessorsAfterInitialization(Object bean, String beanName) throws Exception {
         for (BeanPostProcessor processor : beanPostProcessors) {
-            processor.postProcessAfterInitialization(bean, beanName);
+            bean = processor.postProcessAfterInitialization(bean, beanName);
         }
+        return bean;
     }
 
 
